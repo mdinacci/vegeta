@@ -72,14 +72,15 @@ func MakeSeries(results []Result) (*bytes.Buffer) {
 // of the latencies of the requests. Built with http://dygraphs.com/
 func ReportPlot(results []Result) ([]byte, error) {
 	series := MakeSeries(results)
-	return []byte(fmt.Sprintf(plotsTemplate, "", dygraphJSLibSrc(), series)), nil
+	return []byte(fmt.Sprintf(plotsTemplate, "", "", dygraphJSLibSrc(), series)), nil
 }
 
 // Call both ReportText and ReportPlot to produce a combined html page. 
-func ReportCombined(results []Result) ([]byte, error) {
+func ReportCombined(results []Result, fullUrl string, rate uint64, duration uint64) ([]byte, error) {
 	textResults, _ := ReportText(results)
 	series := MakeSeries(results)
-	return []byte(fmt.Sprintf(plotsTemplate, string(textResults), dygraphJSLibSrc(), series)), nil	
+	title := fmt.Sprintf("%s Rate: %d Duration: %d", fullUrl, rate, duration)
+	return []byte(fmt.Sprintf(plotsTemplate, title, string(textResults), dygraphJSLibSrc(), series)), nil	
 }
 
 const plotsTemplate = `<!doctype>
@@ -88,7 +89,10 @@ const plotsTemplate = `<!doctype>
   <title>Plots</title>
 </head>
 <body>
+<p><b>%s</b></p>
+<pre>
 %s
+</pre>
   <div id="latencies" style="font-family: Courier; width: 100%%; height: 600px"></div>
   <a href="#" download="plot.png" onclick="this.href = document.getElementsByTagName('canvas')[0].toDataURL('image/png').replace(/^data:image\/[^;]/, 'data:application/octet-stream')">Download as PNG</a>
   <script>
@@ -99,7 +103,7 @@ const plotsTemplate = `<!doctype>
     document.getElementById("latencies"),
     [%s],
     {
-      title: 'Plot',
+      title: '',
       labels: ['Seconds', 'ERR', 'OK'],
       ylabel: 'Latency (ms)',
       xlabel: 'Seconds elapsed',
