@@ -73,11 +73,11 @@ func ReportPlot(results []Result) ([]byte, error) {
 const plotsTemplate = `<!doctype>
 <html>
 <head>
-  <title>Vegeta Plots</title>
+  <title>Plots</title>
 </head>
 <body>
   <div id="latencies" style="font-family: Courier; width: 100%%; height: 600px"></div>
-  <a href="#" download="vegetaplot.png" onclick="this.href = document.getElementsByTagName('canvas')[0].toDataURL('image/png').replace(/^data:image\/[^;]/, 'data:application/octet-stream')">Download as PNG</a>
+  <a href="#" download="plot.png" onclick="this.href = document.getElementsByTagName('canvas')[0].toDataURL('image/png').replace(/^data:image\/[^;]/, 'data:application/octet-stream')">Download as PNG</a>
   <script>
 	%s
   </script>
@@ -86,7 +86,7 @@ const plotsTemplate = `<!doctype>
     document.getElementById("latencies"),
     [%s],
     {
-      title: 'Vegeta Plot',
+      title: 'Plot',
       labels: ['Seconds', 'ERR', 'OK'],
       ylabel: 'Latency (ms)',
       xlabel: 'Seconds elapsed',
