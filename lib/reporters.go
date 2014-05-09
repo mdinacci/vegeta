@@ -46,7 +46,7 @@ func ReportJSON(results []Result) ([]byte, error) {
 	return json.Marshal(NewMetrics(results))
 }
 
-func MakeSeries(result []Result) (*bytes.Buffer) {
+func MakeSeries(results []Result) (*bytes.Buffer) {
 	series := &bytes.Buffer{}
 	for i, point := 0, ""; i < len(results); i++ {
 		point = "[" + strconv.FormatFloat(
@@ -71,13 +71,13 @@ func MakeSeries(result []Result) (*bytes.Buffer) {
 // ReportPlot builds up a self contained HTML page with an interactive plot
 // of the latencies of the requests. Built with http://dygraphs.com/
 func ReportPlot(results []Result) ([]byte, error) {
-	series = MakeSeries(results)
+	series := MakeSeries(results)
 	return []byte(fmt.Sprintf(plotsTemplate, "", dygraphJSLibSrc(), series)), nil
 }
 
 // Call both ReportText and ReportPlot to produce a combined html page. 
 func ReportCombined(results []Result) ([]byte, error) {
-	textResults := ReportText(results)
+	textResults, _ := ReportText(results)
 	series := MakeSeries(results)
 	return []byte(fmt.Sprintf(plotsTemplate, string(textResults), dygraphJSLibSrc(), series)), nil	
 }
