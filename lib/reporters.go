@@ -46,9 +46,7 @@ func ReportJSON(results []Result) ([]byte, error) {
 	return json.Marshal(NewMetrics(results))
 }
 
-// ReportPlot builds up a self contained HTML page with an interactive plot
-// of the latencies of the requests. Built with http://dygraphs.com/
-func ReportPlot(results []Result) ([]byte, error) {
+func MakeSeries(result []Result) (*bytes.Buffer) {
 	series := &bytes.Buffer{}
 	for i, point := 0, ""; i < len(results); i++ {
 		point = "[" + strconv.FormatFloat(
@@ -67,7 +65,21 @@ func ReportPlot(results []Result) ([]byte, error) {
 		series.Truncate(series.Len() - 1)
 	}
 
-	return []byte(fmt.Sprintf(plotsTemplate, dygraphJSLibSrc(), series)), nil
+	return series
+}
+
+// ReportPlot builds up a self contained HTML page with an interactive plot
+// of the latencies of the requests. Built with http://dygraphs.com/
+func ReportPlot(results []Result) ([]byte, error) {
+	series = MakeSeries(results)
+	return []byte(fmt.Sprintf(plotsTemplate, "", dygraphJSLibSrc(), series)), nil
+}
+
+// Call both ReportText and ReportPlot to produce a combined html page. 
+func ReportCombined(results []Result) ([]byte, error) {
+	textResults := ReportText(results)
+	series := MakeSeries(results)
+	return []byte(fmt.Sprintf(plotsTemplate, string(textResults), dygraphJSLibSrc(), series)), nil	
 }
 
 const plotsTemplate = `<!doctype>
@@ -76,6 +88,7 @@ const plotsTemplate = `<!doctype>
   <title>Plots</title>
 </head>
 <body>
+%s
   <div id="latencies" style="font-family: Courier; width: 100%%; height: 600px"></div>
   <a href="#" download="plot.png" onclick="this.href = document.getElementsByTagName('canvas')[0].toDataURL('image/png').replace(/^data:image\/[^;]/, 'data:application/octet-stream')">Download as PNG</a>
   <script>
