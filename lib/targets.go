@@ -26,9 +26,6 @@ func (t *Target) Request() (*http.Request, error) {
 		return nil, err
 	}
 
-	req.Header.Add("Accept","application/json")
-	req.Header.Add("Content-Type","application/json;charset=UTF-8")
-
 	for k, vs := range t.Header {
 		req.Header[k] = make([]string, len(vs))
 		copy(req.Header[k], vs)
