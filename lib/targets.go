@@ -33,7 +33,6 @@ func (t *Target) Request() (*http.Request, error) {
 	if host := req.Header.Get("Host"); host != "" {
 		req.Host = host
 	}
-    req.SetBasicAuth("test1", "test1")
 	return req, nil
 }
 
