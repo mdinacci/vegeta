@@ -76,7 +76,7 @@ func ReportPlot(results []Result) ([]byte, error) {
 }
 
 // Call both ReportText and ReportPlot to produce a combined html page. 
-func ReportCombined(results []Result, fullUrl string, rate uint64, duration uint64) ([]byte, error) {
+func ReportPlotAndText(results []Result, fullUrl string, rate uint64, duration uint64) ([]byte, error) {
 	textResults, _ := ReportText(results)
 	series := MakeSeries(results)
 	title := fmt.Sprintf("%s Rate: %d Duration: %d", fullUrl, rate, duration)
